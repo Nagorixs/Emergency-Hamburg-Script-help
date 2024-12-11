@@ -1,0 +1,143 @@
+local OrionLib = loadstring(game:HttpGet("https://[Log in to view URL]"))()
+
+local MainWindow = OrionLib:MakeWindow({
+    Name = "NagHub | Emergency Hamburg",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "NagHub"
+})
+
+-- Aimbot
+local aimbotTab = MainWindow:MakeTab({
+    Name = "Aimbot",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local aimbotKeybind = "E"
+
+aimbotTab:AddKeybind({
+    Name = "Aimbot Keybind",
+    CurrentKeybind = aimbotKeybind,
+    HoldToInteract = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local mouse = player:GetMouse()
+        print("Aimbot activated!")
+    end
+})
+
+-- ESP
+local espTab = MainWindow:MakeTab({
+    Name = "ESP",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local espKeybind = "F"
+
+espTab:AddKeybind({
+    Name = "ESP Keybind",
+    CurrentKeybind = espKeybind,
+    HoldToInteract = false,
+    Callback = function()
+        for _, obj in pairs(workspace:GetChildren()) do
+            if obj:IsA("Player") then
+                local espBox = Instance.new("BillboardGui", obj)
+                espBox.Name = "ESP"
+                espBox.Size = UDim2.new(2, 0, 2, 0)
+                espBox.AlwaysOnTop = true
+
+                local healthLabel = Instance.new("TextLabel", espBox)
+                healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                healthLabel.Position = UDim2.new(0, 0, -0.5, 0)
+                healthLabel.BackgroundTransparency = 1
+                healthLabel.TextColor3 = Color3.new(1, 1, 1)
+                healthLabel.TextSize = 14
+                healthLabel.Text = "HP: " .. (obj.Humanoid and obj.Humanoid.Health or "nil")
+
+                local teamLabel = Instance.new("TextLabel", espBox)
+                teamLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                teamLabel.Position = UDim2.new(0, 0, 0, 0)
+                teamLabel.BackgroundTransparency = 1
+                teamLabel.TextColor3 = Color3.new(1, 1, 1)
+                teamLabel.TextSize = 14
+                teamLabel.Text = "Team: " .. (obj.Team and obj.Team.Name or "None")
+            end
+        end
+        print("ESP activated!")
+    end
+})
+
+-- Noclip
+local noclipTab = MainWindow:MakeTab({
+    Name = "Noclip",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local noclipKeybind = "G"
+
+noclipTab:AddKeybind({
+    Name = "Noclip Keybind",
+    CurrentKeybind = noclipKeybind,
+    HoldToInteract = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local humanoid = char and char:FindFirstChild("Humanoid")
+        local noclipEnabled = humanoid and not humanoid.NoClip or false
+
+        if humanoid then
+            humanoid.NoClip = noclipEnabled
+            print("Noclip toggled:", noclipEnabled)
+        end
+    end
+})
+
+-- Autoheal
+local autohealTab = MainWindow:MakeTab({
+    Name = "Autoheal",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local autohealKeybind = "H"
+
+autohealTab:AddKeybind({
+    Name = "Autoheal Keybind",
+    CurrentKeybind = autohealKeybind,
+    HoldToInteract = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character.Humanoid
+
+        if humanoid then
+            print("Autoheal activated!")
+        end
+    end
+})
+
+-- Handle keybind updates
+local inputService = game:GetService("UserInputService")
+
+local function updateKeybind(key, newKey)
+    if key == "Aimbot" then aimbotKeybind = newKey end
+    if key == "ESP" then espKeybind = newKey end
+    if key == "Noclip" then noclipKeybind = newKey end
+    if key == "Autoheal" then autohealKeybind = newKey end
+end
+
+inputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.UserInputType == Enum.UserInputType.Keyboard then
+        local key = input.KeyCode.Name
+        if key == aimbotKeybind then aimbotTab:Fire() end
+        if key == espKeybind then espTab:Fire() end
+        if key == noclipKeybind then noclipTab:Fire() end
+        if key == autohealKeybind then autohealTab:Fire() end
+    end
+end)
+
+OrionLib:Init()
